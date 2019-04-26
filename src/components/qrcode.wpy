@@ -1,0 +1,62 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="panel">
+   <canvas class='canvas' canvas-id='canvas' ></canvas>
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+var QRCode = require('../static/js/qrcode.js');
+  let qrcode;
+  export default class Panel extends wepy.component {
+        props={
+            width:{
+                type:Number,
+                default:150,
+                twoWay:true,
+            },
+            height:{
+                type:Number,
+                default:150,
+                twoWay:true,
+            },
+            colorDark:{
+                type:String,
+                default:'#000',
+                twoWay:true,
+            },
+             colorLight:{
+                type:String,
+                default:'white',
+                twoWay:true,
+            },
+            text:{
+                type:String,
+                default:"",
+                twoWay:true,
+            }
+        }
+        watch={
+            text(newvalue){
+                 qrcode.makeCode(newvalue)
+            }
+        }
+        checkqrcode(){
+             qrcode.makeCode(this.text)
+        }
+        onLoad(){
+            qrcode = new QRCode('canvas', {
+            // usingIn: this,
+            text:this.text,
+            width: this.width,
+            height: this.height,
+            colorDark: this.colorDark,
+            colorLight: this.colorLight,
+            correctLevel: QRCode.CorrectLevel.H,
+        });
+        }
+  }
+</script>

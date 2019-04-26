@@ -1,0 +1,13 @@
+{
+  "description": "A WePY project",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wxbda507b28c03e20c",
+  "projectname": "backend-wepy",
+  "miniprogramRoot": "./dist"
+}

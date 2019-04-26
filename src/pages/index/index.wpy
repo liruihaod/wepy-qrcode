@@ -1,0 +1,36 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="index">
+        <qrcode :text.sync="text"/>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+let key;
+import Qrcode from "../../components/qrcode"
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '测试二维码'
+  };
+  components = {
+    qrcode:Qrcode
+  };
+  data = {
+    text:"",
+  };
+
+  computed = {};
+
+  methods = {
+   
+    
+  };
+
+  onLoad() {
+    this.text="测试下"
+  }
+}
+</script>

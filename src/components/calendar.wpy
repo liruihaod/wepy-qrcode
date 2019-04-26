@@ -1,0 +1,392 @@
+<style lang="less">
+        .wepy-calendar-top {
+        margin-top: 30rpx;
+        padding: 0 30rpx;
+        line-height: 60rpx;
+    }
+
+    .wepy-calendar-top, .wepy-calendar-weeks {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .wepy-calendar-top image {
+        width: 35rpx;
+        height: 35rpx;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .wepy-calendar-date, .wepy-calendar-week {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        text-align: center;
+    }
+
+    .wepy-calendar-date {
+        font-size: 34rpx;
+    }
+
+    .wepy-calendar-next {
+        transform: rotate(180deg);
+        -ms-transform: rotate(180deg); /* IE 9 */
+        -moz-transform: rotate(180deg); /* Firefox */
+        -webkit-transform: rotate(180deg); /* Safari 和 Chrome */
+        -o-transform: rotate(180deg); /* Opera */
+    }
+
+    .wepy-calendar-day {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .wepy-calendar-weeks {
+        margin: 30rpx 0;
+    }
+
+    .wepy-calendar-week {
+        font-size: 24rpx;
+        color: #999999;
+    }
+
+    .wepy-calendar-day .day {
+        display: inline-block;
+        width: 60rpx;
+        height: 60rpx;
+        line-height: 40rpx;
+        transform:translateY(-10px)
+       
+    }
+
+    .wepy-calendar-day .day image {
+        width: 30rpx;
+        height: 30rpx;
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin-right: -15rpx;
+        margin-top: -15rpx;
+    }
+
+    .wepy-calendar-day.today {
+        border-radius: 50%;
+        background: #fedf54;
+        box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.2);
+    }
+    .wepy-calendar-day{
+        position:relative;
+        text{
+            font-size:24rpx;
+            text-align:center;
+            color:#202020;
+            display:block;
+            text-align:center;
+            &.tips{
+                color:#00aaef;
+                font-size:22rpx;
+                position:absolute;
+                width:100%;
+                bottom:-10px;
+                left:0;
+            }
+        }
+        
+    }
+    .wepy-calendar-day.selected {
+       background:#00aaef;
+       text{
+           color:white;
+       }
+    }
+    .wepy-calendar-day.closed{
+        text{
+            color:#c0c0c0;
+        }
+    }
+    
+    
+
+</style>
+<template>
+      <view class="wepy-calendar">
+        <view class="wepy-calendar-top">
+            <view class="wepy-calendar-prev" @tap.stop="handleCalendar('prev')">
+                <image src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAMc0lEQVR4Xu2dX4hdVxWH17p30jimKr4lIChIfVB8EjRiTEjTprZiBamIFKMwc+85dyKjxEJrKzSo1YKaSiTxHAcqpE8GsdKHGrUaBdta/9Q/D61WkQiCRFpCm47jJHPvllNuNY5z556zz1rnrD37N6+z99prf7/9sefcO3OHCV8gAAITCTDYgAAITCYAQXA6QGATAhAExwMEIAjOAAj4EcAN4scNsyIhAEEiCRrb9CMAQfy4YVYkBCBIJEFjm34EIIgfN8yKhAAEiSRobNOPAATx44ZZkRCAIJEEjW36EYAgftwwKxICECSSoLFNPwIQxI8bZkVCAIJEEjS26UcAgvhxw6xICECQSILGNv0IQBA/bpgVCQEIEknQ2KYfAQjixw2zIiEAQSIJGtv0IwBB/Lht2Vl5nu8ioj1EdI1zrsPMjyZJcnbLbnjKxiBIrMmv2/fS0tLu4XD4WWa+fj0S59w5Zr4vSZLjseGCILElvsF+syz7DDN/bhoK59zj27Ztu2Fubu7itLFb5fsQZKsk6bmPPM/vIaI7y053zj2YpukHyo4PfRwECT3BGv1nWfYlZr6tagnn3I1pmp6pOi/E8RAkxNQEes7z/PNEdJdPKefcw2mavtdnbmhzIEhoiQn063tzXLH05X6/v52ZnUA7pktAENPxyDeXZdkXmPnTdSt3u91r5ufn/1y3jvX5EMR6QoL9Cdwc/+mm2+2+YX5+/q+C7ZksBUFMxiLfVJ7nXySiO6QqJ0kSxdmJYpNShyLUOpI3R8HAOffDNE0PhsqjSt8QpAqtAMdK3xwFAmY+1O/3HwgQR+WWIUhlZOFMkL45xrfHU2maviUcCvU6hSD1+JmdrXFzOOeeY+Y9SZL8wezGhRuDIMJALZTLsuxeZr5dshfn3AudTmdfv9//rWRd67UgiPWEKvan8WMVET0/Go32DwaD31RsJ/jhECT4CP+7gTzPv0ZEHxfeUrRyvPSChDBMlGuJAOTQAQ9BdLg2WhVy6OGGIHpsG6kMOXQxQxBdvqrVIYcq3peKQxB9xiorQA4VrP9XFII0w1l0FQ05nHMvOuf2xvhS7mbhQBDRo6tfTFGOA4PB4Bf6OwhrBQgSUF6Qo/mwIEjzzL1WhBxe2GpPgiC1EeoXgBz6jCetAEHaY19qZchRCpPaIAiihrZ+YchRn2HdChCkLkGl+VmWfYOZe5Llxy/l4tWqClAhSAVYTQ2FHE2Rnr4OBJnOqNERkKNR3FMXgyBTETU3QEMOIvrn+I+d8CagR5QQxAOaxhRFOQ4OBoNHNXqOoSYEMZAy5DAQwoQWIEjL2UCOlgOYsjwEaTEfyNEi/JJLQ5CSoKSH5Xl+kogGwnWLB3I8cwhChSCCMMuWghxlSbU/DoI0nAHkaBh4zeUgSE2AVaZDjiq0bIyFIA3lkOf5fUT0SeHl8MwhDHR9OQiiDLgoryTHv0aj0XV4E1A3QAiiy1dNDiK6KUmSs8rtR18egigeAa2bA3IohrauNARRYp3n+ZeJ6FMK5a/FzaFAdUJJCKLAWuPmcM6tdDqdG/v9/k8VWkZJCNLMGVD6z04rRHQgTdPHm9kFVnmZAG4QwbMAOQRhGikFQYSCgBxCII2VgSACgUAOAYhGS0CQmsFAjpoAjU+HIDUCUpLjRSI6iAfyGsEIToUgnjDzPL+biI56Tt9wWvG5VUS0P03TX0nWRS1/AhDEg12WZbcz870eUydOgRySNOVqQZCKLCFHRWCBD4cgFQKEHBVgbZGhEKRkkEpyvDB+hxzPHCVzaHoYBClBXFGOvWma/q5ECxjSEgEIMgV8lmWfYOavSubjnCtuDsghCVWpFgTZBCzkUDp1AZWFIBPCghwBnWLFViHIBnAhh+KJC6w0BFkXmJIcF8bvkOOBHIIERuCKdhXl2JOm6VPhkom3c9wg4+yzLEuZ+euSR8E5V9wckEMSasO1IAgRQY6GT11Ay0UvCOQI6LS20GrUgmjIQUTPOuf24ZmjhdOssGS0gmjJwczv6vf7zyhkhZItEIhSEMjRwkkLdMnoBMmy7BZmPk1Eknt/FjdHoAZMaVvykJgnlGXZO5n5MclGnXPPdbvdd/d6vacl66KWDQLRCJLn+TYi+hMRvV4QPW4OQZgWS8UkSFK85SEYwnlm3osHckGiBkvFJMhPiGifUAbnh8PhvoWFhT8K1UMZowSiESTLsr8z806BHJ5h5vfh5hAgGUCJaATJ87z4K75XCWSykCSJ6O9sCfSEEkoEYhLk90T0ViGOD62trd16+PDh4oPe8LWFCcQkyD1EdKdglk/Mzs4eOHTo0LJgTZQyRiAaQZaWll43Go2Kl3lfIZjBY2trazfgJhEkaqxUNIIU3JX+IOrnw+Hwekhi7GQLtROVIGNJvsnMHxPi93IZ/LglDNRKuegEKcDneX6KiD4iHAJ+3BIGaqFclII45zjP8weY+VbhEHCTCANtu1yUghTQIUnbRy+M9aMVBJKEcUDb7jJqQa6Q5DQz3yIcBn7cEgbaRrnoBSmgHz16tLNz585vQZI2jqDtNSHIOB9IYvugttUdBLmCPCRp6xjaXReCrMsGktg9rG10BkE2oA5J2jiKNteEIBNy0ZRkdXX14OLiYvH3KfgyTgCCbBKQoiRPrq6u7ockxu0Q/mwo+7v16BCSeEDbQlNwg5QIE5KUgLRFh0CQksFCkpKgttgwCFIh0EKSXbt2PUhEN1eYVmYonknKUGphDASpCP306dPdCxcufAeSVAQX6HAI4hEcJPGAFugUCOIZHCTxBBfYNAhSIzBIUgNeIFMhSM2gIElNgManQxCBgCCJAESjJSCIUDCQRAiksTIQRDAQSCII00gpCCIcBCQRBtpyOQiiEAAkUYDaUkkIogg+y7LvMvP7hZf4NREdSJLkeeG6KLcBAQiieCyKfxzqnHuImd8jvAx+d0sY6KRyEEQZNCRRBqxcHoIoAy7KQ5IGICstAUGUwK4vC0kaAi28DAQRBrpZOUjSIGyhpSCIEMiyZTQlmZ2d3Yv/mVg2iXLjIEg5TqKjFCXBB2aLJkUEQYSBli0HScqSanccBGmRPyRpEX7JpSFISVBawyCJFlmZuhBEhmOtKpCkFj7VyRBEFW/54mNJzjDzteVnlRr5xPLy8v4jR46slBqNQf9DAIIYOhDHjx/fftVVVz2sIMnPlpeXD0KS6mFDkOrMVGdAElW8lYtDkMrI9CdAEn3GZVeAIGVJNTwOkjQMfMJyEMRGDht2AUnaDweCtJ/Bph1oSrK6unrd4uLiqnEErbYHQVrFX25xLUmccz++dOnSTZBkcg4QpNwZbX0UJGknAgjSDnevVSGJF7ZakyBILXzNT4YkzTKHIM3yFlkNkohgLFUEgpTCZG+QpiTFxxQlSXLZ3q6b7wiCNM9cbEVFSYpfmrwZkuAvCsUOa1uFCkm2b9/+CBHtkezBOQdJCIJInqnWah07dmx2x44dP4Ak8hHgRyx5pq1UhCQ62CGIDtdWqkISeewQRJ5pqxUhiSx+CCLL00S1PM9f6Zz7HjPvlWzIOfftNE0/KFnTei0IYj0hz/60bhIiui1Jkq94thXcNAgSXGTlG1aS5PJoNHrTYDA4V76TcEdCkHCzK9X5qVOndqysrJyRfAnYOXcqTdOPlmog8EEQJPAAy7SvcJNc7Pf7r2FmV2b9kMdAkJDTq9B78eBORN+Xukk6nc6be73e0xVaCHIoBAkyNr+mJW+S4XD4xoWFhb/4dRLOLAgSTlYinUo9k8zMzLx6bm7uokhThotAEMPhaLU2vknOEtE7PNd4MkmSt3nODWoaBAkqLrlmxzfJj3wkYea5fr9/v1w3ditBELvZqHd24sSJq2dmZopfla9yk/wySZK3qzdnZAEIYiSItto4efLkazudTvGB2bun9eCcO9ftdnf3er3z08Zule9DkK2SZM195Hl+h3PuLma+ekKp+zudzt29Xu9vNZcKajoECSou3WbHzyUfJqIPEdE255xj5kdGo9HSYDD4h+7qNqtDEJu5oCsjBCCIkSDQhk0CEMRmLujKCAEIYiQItGGTAASxmQu6MkIAghgJAm3YJABBbOaCrowQgCBGgkAbNglAEJu5oCsjBCCIkSDQhk0CEMRmLujKCAEIYiQItGGTAASxmQu6MkIAghgJAm3YJABBbOaCrowQgCBGgkAbNglAEJu5oCsjBCCIkSDQhk0CEMRmLujKCAEIYiQItGGTAASxmQu6MkIAghgJAm3YJABBbOaCrowQ+DdgB3QUGAYl8QAAAABJRU5ErkJggg=="/>
+            </view>
+            <picker class="wepy-calendar-date" mode="date" fields="month" value="{{pickerValue}}" start="{{startDate}}"
+                    end="{{endDate}}" @change="bindDateChange">
+                <view class="picker">
+                    {{current.year || "--"}} 年 {{current.month || "--"}} 月
+                </view>
+            </picker>
+            <view class="wepy-calendar-next" @tap.stop="handleCalendar('next')">
+                <image src="data:image/png;base64,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"/>
+            </view>
+        </view>
+        <view class="wepy-calendar-weeks">
+            <view class="wepy-calendar-week" wx:for="{{weeks_ch}}" wx:key="{{index}}" data-idx="{{index}}">{{item}}
+            </view>
+        </view>
+        <view class="wepy-calendar-days">
+            <view wx:if="{{hasEmptyGrid}}" style="width: {{dayWidth}}px; line-height:70px;height:70px;"
+                  class="wepy-calendar-day" wx:for="{{empytGrids}}" wx:key="{{index}}" data-idx="{{index}}">
+            </view>
+            <view class="wepy-calendar-day {{newday>item.time&&!item.today?'closed':''}} {{item.choosed ? 'selected' : ''}}" style="width: {{dayWidth}}px; height:70px;line-height:70px" wx:for="{{days}}"
+                  wx:key="{{index}}" data-idx="{{index}}" @tap.stop="tapDayItem({{index}})">
+                <view class="day {{item.today ? 'today' : ''}}">
+                    <text class="time">{{item.day}}</text>
+                    <text class="tips">{{item.choosed?'预约':item.today?'今天':''}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+   import wepy from 'wepy'
+
+    let newDate = new Date()
+    export default class Calendar extends wepy.component {
+        props = {
+            currentDate: {
+                type: String,
+                default: newDate.getFullYear() + '-' + (newDate.getMonth() + 1) + '-' + newDate.getDate(),
+                twoWay: true
+            },
+            startDate: {
+                type: String,
+                default: (newDate.getFullYear() - 30) + '-' + (newDate.getMonth() + 1) + '-01',
+                twoWay: true
+            },
+            endDate: {
+                type: String,
+                default: (newDate.getFullYear() + 3) + '-' + (newDate.getMonth() + 1) + '-28',
+                twoWay: true
+            },
+            hasIconList: {
+                type: Object,
+                default: [],
+                twoWay: true
+            },
+            moduleId: {
+                type: String,
+                default: '',
+                twoWay: true
+            }
+        }
+
+        onLoad() {
+            this.setCurrentData()
+            this.now.year = newDate.getFullYear()
+            this.now.month = newDate.getMonth() + 1
+            this.now.day = newDate.getDate()
+            this.newday=new Date().getTime();
+        }
+
+        data = {
+            days: [],
+            newday:"",
+            current: {},
+            hasEmptyGrid: false,
+            empytGrids: [],
+            showPicker: false,
+            weeks_ch: [ '日','一', '二', '三', '四', '五', '六'],
+            dayWidth: 0,
+            now: {
+                year: 0,
+                month: 0,
+                day: 0
+            }
+        }
+
+        computed = {
+            pickerValue() {
+                let value = this.current.year + '-' + this.setDouble(this.current.month)
+                return value
+            }
+        }
+
+        watch = {
+            currentDate() {
+                this.setCurrentData()
+            },
+            current(val) {
+                this.calculateDays(val.year, val.month)
+            }
+        }
+
+        methods = {
+            // 点击日历上某一天
+            tapDayItem(index, e) {
+                //这里需要判断下
+                if(this.days[index].time<this.newday&&!this.days[index].today){
+                         wx.showToast({
+                                title: '当前日期不可预约',
+                                icon: 'none',
+                                duration: 2000
+                            });
+                        return;
+                }
+                if (this.days[index].choosed) {
+                    this.days[index].choosed = false
+                } else {
+                    this.setAllNotSelected().then(() => {
+                        this.days[index].choosed = true
+                        this.$apply()
+                    })
+                }
+                this.$emit('calChangeSelectedDay', this.current.year + '-' + this.setDouble(this.current.month) + '-' + this.setDouble(index + 1), this.moduleId, e)
+            },
+            // 递增、递减切换月份
+            handleCalendar(type, e) {
+                const curYear = this.current.year
+                const curMonth = this.current.month
+                let newMonth
+                let newYear
+                if (type === 'prev') {
+                    newMonth = curMonth - 1
+                    newYear = curYear
+                    if (newMonth < 1) {
+                        newYear = curYear - 1
+                        newMonth = 12
+                    }
+                } else {
+                    newMonth = curMonth + 1
+                    newYear = curYear
+                    if (newMonth > 12) {
+                        newYear = curYear + 1
+                        newMonth = 1
+                    }
+                }
+                this.current.year = newYear
+                this.current.month = newMonth
+                this.calculateEmptyGrids(newYear, newMonth)
+                this.$emit('calChangeCurrentMonth', this.current.year + '-' + this.setDouble(this.current.month), this.moduleId, e)
+            },
+            // 点击年月调用picker选择器
+            bindDateChange(e) {
+                console.log('datechange:', e)
+                let value = e.detail.value.split('-')
+                let year = parseInt(value[0])
+                let month = parseInt(value[1])
+                if (year === parseInt(this.current.year) && month === parseInt(this.current.month)) {
+                    return false
+                } else {
+                    this.current.year = year
+                    this.current.month = month
+                    this.$emit('calChangeCurrentMonth', this.current.year + '-' + this.setDouble(this.current.month), this.moduleId, e)
+             
+                    this.drawCalendar()
+                }
+            }
+        }
+
+        events = {
+            startRenderCalendar() {
+                this.setCurrentData()
+                this.now.year = newDate.getFullYear()
+                this.now.month = newDate.getMonth() + 1
+                this.now.day = newDate.getDate()
+                this.newday=new Date().getTime();
+                this.drawCalendar()
+            }
+        }
+
+        getThisMonthDays(year, month) {
+            return new Date(year, month, 0).getDate()
+        }
+
+        // 计算每月第一天是星期几
+        getFirstDayOfWeek(year, month) {
+            return new Date(Date.UTC(year, month - 1, 1)).getDay()
+        }
+
+        calculateEmptyGrids(year, month) {
+            const firstDayOfWeek = this.getFirstDayOfWeek(year, month)
+            let empytGrids = []
+            if (firstDayOfWeek > 0) {
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    empytGrids.push(i)
+                }
+                this.hasEmptyGrid = true
+            }
+            this.empytGrids = empytGrids
+        }
+
+        // 渲染日历格子
+        calculateDays(year, month) {
+            let days = []
+            const thisMonthDays = this.getThisMonthDays(year, month)
+            month = this.setDouble(month)
+            for (let i = 1; i <= thisMonthDays; i++) {
+                let day = {day: i, choosed: false,time:new Date(`${year}-${month}-${i}`).getTime()}
+                let checkDay = year + '-' + month + '-' + this.setDouble(i)
+                if (this.hasIconList && this.hasIconList.length > 0) {
+                    this.hasIconList.map((item) => {
+                        if (i === item) {
+                            day.hasIcon = true
+                        }
+                    })
+                }
+                if (parseInt(this.current.year) === parseInt(this.now.year) && parseInt(this.current.month) === parseInt(this.now.month) && i === parseInt(this.now.day)) {
+                    day.today = true
+                }
+                days.push(day)
+            }
+            this.days = days
+            this.$apply()
+        }
+
+        setAllNotSelected() {
+            return new Promise((resolve, reject) => {
+                this.days.map((item) => {
+                    item.choosed = false
+                })
+                resolve()
+            })
+        }
+
+        drawCalendar() {
+            this.calculateEmptyGrids(this.current.year, this.current.month)
+            this.calculateDays(this.current.year, this.current.month)
+
+            let getDayWidth = new Promise((resolve, reject) => {
+                wx.createSelectorQuery().select('.wepy-calendar-weeks').boundingClientRect(function (rect) {
+                    resolve(parseInt(rect.width / 7))
+                }).exec()
+            })
+            getDayWidth.then((width) => {
+                this.dayWidth = width
+                this.$apply()
+            })
+        }
+
+        setDouble(value) { // 设置月或日两位数格式
+            if (value) {
+                value = value.toString()
+                if (value.length === 2) {
+                    return value
+                } else {
+                    return '0' + value
+                }
+            }
+        }
+
+        setCurrentData() { // 设置当前年月
+            if(isNaN(new Date(this.currentDate).getTime()))return;
+            this.current.year = new Date(this.currentDate).getFullYear()
+            this.current.month = new Date(this.currentDate).getMonth() + 1
+        }
+    }
+</script>
+
