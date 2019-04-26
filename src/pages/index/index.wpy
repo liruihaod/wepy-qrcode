@@ -25,8 +25,8 @@ export default class Index extends wepy.page {
   };
   data = {
     text:"",
-    colorLight:"",
-    colorLight:"",
+    colorLight:"#fff",
+    colorDark:"#000",
     width:"",
     height:"",
   };

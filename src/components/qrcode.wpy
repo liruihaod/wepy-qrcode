@@ -30,7 +30,7 @@ var QRCode = require('../static/js/qrcode.js');
             },
              colorLight:{
                 type:String,
-                default:'white',
+                default:'#fff',
                 twoWay:true,
             },
             text:{
