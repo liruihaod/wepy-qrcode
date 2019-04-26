@@ -1,4 +1,4 @@
-# weapp-qrcode
+# wepy-qrcode
 
 微信小程序生成二维码工具 wepy组件
 
